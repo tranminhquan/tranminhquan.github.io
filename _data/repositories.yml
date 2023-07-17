@@ -1,12 +1,17 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - tranminhquan
+  # - alshedivat
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - tranminhquan/advosights_amplification_factor
+  - tranminhquan/advosights_influence_prediction
+  - tranminhquan/bottle_cap_classification
+  - tranminhquan/crowd_detection
+  - tranminhquan/deep_transfer_learning_research
+  # - alshedivat/al-folio
+  # - twbs/bootstrap
+  # - jekyll/jekyll
+  # - jquery/jquery
+  # - FortAwesome/Font-Awesome
+  # - jpswalsh/academicons
+  # - mathjax/MathJax

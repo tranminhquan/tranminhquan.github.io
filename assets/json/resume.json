@@ -1,77 +1,251 @@
 {
   "basics": {
-    "name": "Albert Einstein",
-    "label": "Scientist",
+    "name": "Quan Minh Tran",
+    "address": "Ho Chi Minh City, Vietnam",
     "image": "",
-    "email": "albert@einstein.de",
-    "phone": "(912) 123-4567",
-    "url": "https://alshedivat.github.io/al-folio/",
-    "summary": "A German-born theoretical physicist, widely ranked among the greatest and most influential scientists of all time",
-    "location": {
-      "address": "2712 Broadway St",
-      "postalCode": "CA 94115",
-      "city": "San Francisco",
-      "countryCode": "US",
-      "region": "California"
-    },
-    "profiles": [
-      {
-        "network": "Twitter",
-        "username": "AlbertEinstein",
-        "url": "https://twitter.com/AlbertEinstein"
-      }
-    ]
+    "email": "quantran.cv@gmail.com",
+    "phone": "(+84) 357 939697",
+    "scholar": "https://scholar.google.com/citations?user=IToKeqYAAAAJ",
+    "ielts": "7.0"
+    // "location": {
+    //   "address": "2712 Broadway St",
+    //   "postalCode": "CA 94115",
+    //   "city": "San Francisco",
+    //   "countryCode": "US",
+    //   "region": "California"
+    // },
+    // "profiles": [
+    //   {
+    //     "network": "Twitter",
+    //     "username": "AlbertEinstein",
+    //     "url": "https://twitter.com/AlbertEinstein"
+    //   }
+    // ]
   },
-  "work": [
+  "interests": [
     {
-      "name": "Institute for Advanced Study, Princeton University",
-      "position": "Professor of Theoretical Physics",
-      "url": "https://example.com",
-      "startDate": "1933-01-01",
-      "endDate": "1955-01-01",
-      "summary": "Teaching at Palmer Physical Laboratory (now 302 Frist Campus Center). While not a professor at Princeton, I associated with the physics professors and continued to give lectures on campus.",
-      "highlights": [
-        "Relativity"
-      ]
+      "name": "Deep Learning",
+      "keywords": ["model optimization", "neural architecture search","automl"]
+    },
+    {
+      "name": "Computer Vision",
+      "keywords": ["object detection / classification", "pose estimation","person reidentification"]
+    },
+    {
+      "name": "Graph",
+      "keywords": ["graph neural network", "network analysis"]
+    },
+    {
+      "name": "Representation learning",
+      "keywords": ["incremental learning", "metric learning", "self-supervised learning"]
+    },
+    {
+      "name": "Miscellaneous",
+      "keywords": ["transfer learning", "generative models", "recommendation system"]
     }
+
   ],
   "volunteer": [],
   "education": [
     {
-      "institution": "University of Zurich, Zurich, Switzerland",
-      "url": "https://www.uzh.ch/",
-      "area": "Software Development",
-      "studyType": "PhD",
-      "startDate": "1905-01-01",
-      "endDate": "1905-01-01",
-      "score": "",
+      "institution": "University of Information Technology - Vietnam National University",
+      // "url": "https://www.uzh.ch/",
+      "area": "Software Engineering",
+      "studyType": "Bachelor",
+      "startDate": "2015",
+      "endDate": "2020",
+      "score": "8.98 / 10",
       "courses": [
-        "Theory of Relativity"
+        "Thesis: Evaluating the efficacy of small face recognition by Convolutional Neural Networks with interpolation based on auto-adjusted parameters and transfer learning (9.9/10)"
       ]
     }
   ],
-  "awards": [
+  "work": [
     {
-      "title": "Nobel Prize in Physics",
-      "date": "1921-11-01",
-      "awarder": "Royal Swedish Academy of Sciences",
-      "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
-    }
-  ],
-  "certificates": [],
-  "publications": [],
-  "skills": [],
-  "languages": [
-    {
-      "language": "German",
-      "fluency": "Native speaker"
+      "name": "Choice Vietnam (NGO)",
+      "position": "AI specialist (Freelance)",
+      // "url": "https://example.com",
+      "startDate": "Mar-2023",
+      "endDate": "current",
+      "summary": "Taking Trash Bin (funded by WWF): Propose and create a product empowered by Deep Learning with an IoT device to recognize 7 different trash’s materials, to give feedback and educate people. The solution is funded by WWF and will be launched in Hue city."
+      // "highlights": [
+      //   "Relativity"
+      // ]
     },
     {
-      "language": "English",
-      "fluency": "Fluent"
+      "name": "Kyanon Digital",
+      "position": "Data&AI Lead (Full-time)",
+      "startDate": "2021",
+      "endDate": "current",
+      "summary": "",
+      "highlights": [
+        "<b>Smart Retail (Team size: 4) - Team leader</b>. <br/> Brainstorm and propose computer-vision-based solutions to increase customer experience on offline shopping. Optimize customer monitoring with DeepSORT and Kalman Filter. Implement Person Re-identification. Propose propensity to buy detection using OpenPose. Propose recommendation based on customer behavior using Graph Neural Network. Research image search with self-supervised learning methods. Setup, manage, and implement the project. Design solution infrastructure.",
+
+        "<b>Face Attendance System (Team size: 2) - Team leader</b>. <br/> Propose learning without forgetting method using ArcFace combined with PoD loss, outperforms other methods. Reproduce and conduct model experiments on Metric Learning, Incremental Learning. Design system infrastructure for serving.",
+
+        "<b>Digital Training Course for Unilever Vietnam (Team size: 4)</b> <br/> Program editor (lecture, lab, quiz), lecturer and teaching assistant of 2 specializations: Executive Data Science (4 courses) and Python for Data Science (4 courses)."
+      ]
+    },
+    {
+      "name": "Kyanon Digital",
+      "position": "AI Researcher (Full-time)",
+      "startDate": "2018",
+      "endDate": "2021",
+      "summary": "",
+      "highlights": [
+        "<b>Influence Prediction (Team size: 4, funded by VinIF)</b> <br/> Analyze and process data crawled from Facebook, 9,225 users, 27,442 posts and 24901 interactions. Research and propose a method to predict the influence of a given post before publishing using Graph Neural Network and Attention mechanism, outperforms GCN, GraphSAGE, GAT, achieves Average Precision 95,42%.",
+
+        "<b>Amplification factor score (Team size: 3, funded by VinIF)</b> <br/> Propose a method to detect micro-influencers and measure their amplifications on social media networks. Create Amplified Graph Convolutional architecture, no labeling effort, can deal with multi-dimensional edge attributes, robust representation learning, outperforms other SOTA networks such as GCN, GraphSAGE, GAT with mAP 89.04%.",
+
+        "<b>Bottle cap image classification (Team size: 1)</b> <br/> Preprocess, analyze 8000 bottle cap images. Propose light-weight SkippedVGG architecture that outperforms and is significantly lighter than VGG, ResNet, DenseNet with accuracy 99,33%."
+
+      ]
+    },
+    {
+      "name": "Intelligent Computing and Image Processing Lab, SaiGon University, Ho Chi Minh City",
+      "position": "Research Student",
+      "startDate": "2017",
+      "endDate": "2020",
+      "summary": "",
+      "highlights": [
+        "<b>Low-resolution face recognition</b> <br/> Create a CNN transformation mechanism to retain high performance on extremely low-resolution face images. Propose an efficient transfer learning approach for the method.",
+
+        "<b>Bayesian Optimization</b> <br/> Design a mechanism for low-resolution face recognition leverage automated Bayesian Optimization search to seek optimal CNN architecture regardless of image resolution variance."
+      ]
+    }],
+  "awards": [
+    {
+      "title": "Certificates of Achievement: In recognition of Impactful Contributions",
+      "date": "2021, 2022",
+      "awarder": "Kyanon Digital"
+      // "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
+    },
+    {
+      "title": "Best presentation award",
+      "date": "2021",
+      "awarder": "13th International Conference on Knowledge and Systems Engineering (KSE)"
+    },
+    {
+      "title": "Award for very good grade graduation",
+      "date": "2020",
+      "awarder": "University of Information Technology - Vietnam National University"
+    },
+    {
+      "title": "Full-tuition scholarships, Academic incentive scholarships",
+      "date": "2015, 2019",
+      "awarder": "University of Information Technology - Vietnam National University"
+    },
+    {
+      "title": "Academic incentive scholarships",
+      "date": "2015 - 2020",
+      "awarder": "University of Information Technology - Vietnam National University"
+    },
+    {
+      "title": "Scholarships for outstanding student",
+      "date": "2015 - 2020",
+      "awarder": "BIDV, KMS, and Fujinet"
+    },
+    {
+      "title": "Consolation Prize on the National Olympic Math Competition",
+      "date": "2017",
+      "awarder": "Vietnam Mathematical Society"
     }
   ],
-  "interests": [],
-  "references": [],
+  "certificates": [
+    {
+      "name": "Research school on “Machine learning and rough path theory for sequential data analysis”",
+      "issuer": "Vietnam Academy of Science and Technology",
+      "date": "2023"
+    },
+    {
+      "name": "Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization",
+      "issuer": "Coursera",
+      "date": "2021"
+    },
+    {
+      "name": "Convolutional Neural Network",
+      "issuer": "Coursera",
+      "date": "2020"
+    },
+    {
+      "name": "Winter school on Mathematics for Data Science",
+      "issuer": "Vietnam Institute for Advanced Study in Mathematics",
+      "date": "2020"
+    },
+    {
+      "name": "IMH School on Inverse Problem and Deep Learning",
+      "issuer": "Vietnam Academy of Science and Technology",
+      "date": "2019"
+    }
+  ],
+  "publications": [
+    {
+      "name": "Evaluating the Efficacy of Small Face Recognition by Convolutional Neural Networks with Interpolation Based on Auto-adjusted Parameters and Transfer Learning. Applied Artificial Intelligence, 1-23. (2022)",
+      "url": "https://doi.org/10.1080/08839514.2021.2012982",
+      "publisher": "<b>Tran, Q. M.</b>, Pham, V. T., Nga, D. T. T., & The Bao, P.",
+      "releaseDate": "2022"
+    },
+    {
+      "name": "Measuring the Influence and Amplification of users on Social Network with Unsupervised Behaviors Learning and Efficient Interaction-based Knowledge Graph, Journal of Combinatorial Optimization (JOCO), 44(4), pp. 2919–2945, 2022. (2022)",
+      "url": "https://doi.org/10.1007/s10878-021-00815-0",
+      "publisher": "<b>Tran, Q. M.</b>, Hien D. Nguyen, Tai Huynh, Kha V. Nguyen, Suong N. Hoang, Vuong T. Pham.",
+      "releaseDate": "2022"
+    },
+    {
+      "name": "Influence Prediction on Social Media Network through Contents and Interaction Behaviors using Attention-based Knowledge Graph. In 2021 13th International Conference on Knowledge and Systems Engineering (KSE) (pp. 1-7). IEEE. (2021)",
+      "url": "https://doi.org/10.1109/KSE53942.2021.9648712",
+      "publisher": "<b>Tran, Q. M.</b>, Nguyen, H. D., Nguyen, B. T., Pham, V. T., & Le, T. T.",
+      "releaseDate": "2021"
+    },
+    {
+      "name": "Efficient CNN Models for Beer Bottle Cap Classification Problem. In International Conference on Future Data and Security Engineering (pp. 713-721). Springer, Cham. (2019)",
+      "url": "http://dx.doi.org/10.1007/978-3-030-35653-8_51",
+      "publisher": "<b>Tran, Q. M.</b>, Nguyen, L. V., Huynh, T., Vo, H. H., & Pham, V. T.",
+      "releaseDate": "2019"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Programming Language",
+      "keywords": ["Python"]
+    },
+    {
+      "name": "Deep Learning libraries",
+      "keywords": ["Torch, Torch Geometric, Keras, Tensorflow"]
+    },
+    {
+      "name": "Data Processing libraries",
+      "keywords": ["OpenCV, Pandas, Matplotlib, Plotly"]
+    },
+    {
+      "name": "MLOps",
+      "keywords": ["MLFlow, Airflow, Kafka, Docker, Wandb"]
+    }
+  ],
+  // "languages": [
+  //   {
+  //     "language": "English",
+  //     "fluency": "IELTS 7.0"
+  //   }
+  // ],
+  "references": [
+    {
+      "name": "Nguyen Thanh Binh",
+      "reference": "Ph.D, Associate Professor in Computer Science, Head of Department of Computer Science, Faculty of Mathematics and Computer Science, University of Science, VNU-HCM, Vietnam."
+    },
+    {
+      "name": "Nguyen Dinh Hien",
+      "reference": "Ph.D, Senior lecturer, University of Information Technology, VNU-HCM, Vietnam."
+    },
+    {
+      "name": "Linh Nguyen",
+      "reference": "Associate Professor, Department of Mathematics and Statistical Science, University of Idaho, USA."
+    },
+    {
+      "name": "Lam Hoang",
+      "reference": "Ph.D, Research Staff Member, IBM Research Europe, Dublin, Ireland"
+    }
+
+  ],
   "projects": []
 }
