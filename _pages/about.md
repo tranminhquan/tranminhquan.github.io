@@ -18,7 +18,7 @@ latest_posts: true  # includes a list of the newest posts
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 ---
- 🎓🎓 **I am looking for a Ph.D oppurtinity** 🎓🎓
+ 🎓🎓 **I am looking for a Ph.D oppurtinity.** 🎓🎓 <br> 👉👉👉 **Checkout my [CV](/cv/)**
 
 I am currently the Data&AI Lead at Kyanon Digital. Here's why I am an asset to your project as a PhD student:
 
