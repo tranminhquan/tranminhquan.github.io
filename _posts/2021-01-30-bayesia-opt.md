@@ -118,11 +118,12 @@ Z =
 $$
 
 The adjusted parameter $\xi$ is use to balance between *exploitation* and *exploration* of two summation terms in the above equation, respectively.
-> High $\xi$ means we lower the probability of first term (the one calculating with mean $\mu$, i.e. the certainty), hence, increase the probability of second term (the one calculating with variance $\sigma$, i.e. the uncertainty) --> we want to explore on the area of uncertainty more, and vice versa.
+
+High $\xi$ means we lower the probability of first term (the one calculating with mean $\mu$, i.e. the certainty), hence, increase the probability of second term (the one calculating with variance $\sigma$, i.e. the uncertainty) --> we want to explore on the area of uncertainty more, and vice versa.
 
 ## The complete process
 
-> In summary, the overall process of Bayesian Optimization can be clarified as follows:
+In summary, the overall process of Bayesian Optimization can be clarified as follows:
     We want to find the optimal values of objective function $f$ with **surrogate model** $P$ and **acquisition function** $u$. Initially, we have limited observations $D={x_N, y_N}$. The iteration below is how Bayesian Optimization works:  
     ---   
     1. Fit ${x_N, y_N}$ to approximate surrogate model $P$  
