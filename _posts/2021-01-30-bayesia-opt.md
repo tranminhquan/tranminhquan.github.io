@@ -3,7 +3,7 @@ layout: post
 title: Bayesian Optimization
 date: 2021-01-30
 description:
-tags: formatting toc sidebar
+tags: paramsearch bayes probml
 categories: probabilistic-ml
 thumbnail: assets/img/bayesian_opt/open_discussion.png
 giscus_comments: true

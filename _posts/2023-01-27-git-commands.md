@@ -3,7 +3,7 @@ layout: post
 title: Beginner to git? This post is for you
 date: 2023-01-27 11:25:00
 description:
-tags: formatting toc sidebar
+tags: fundamentals inanutshell git
 categories: fundamentals-engineering
 thumbnail: assets/img/git_commands/thumbnail.jpg
 giscus_comments: true
