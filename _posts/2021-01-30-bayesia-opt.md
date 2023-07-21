@@ -12,7 +12,8 @@ toc:
   sidebar: right
 ---
 # Opening Discussion
-![open_discussion](/assets/img/bayesian_opt/open_discussion.png)
+<!-- ![open_discussion](/assets/img/bayesian_opt/open_discussion.png) -->
+{% include figure.html path="/assets/img/bayesian_opt/open_discussion.png" class="img-fluid rounded z-depth-1" %}
 
 # Levels of Optimization Problem Solving
 
@@ -137,17 +138,21 @@ The detail about implementation from scratch can be found at [[4]](http://krasse
 Below is the demonstration step-by-step:
 
 Suppose we want to find the values that maximize the objective function below (which is unknown) with some initial observations. 
-![process_step1](/assets/img/bayesian_opt/process_step1.png)
+<!-- ![process_step1](/assets/img/bayesian_opt/process_step1.png) -->
+{% include figure.html path="/assets/img/bayesian_opt/process_step1.png" class="img-fluid rounded z-depth-1" %}
 
 
 1. Approximate a surrogate model $P$ (i.e. Gaussian Process). The green area is CI - Confidence Interval drawn from $\sigma^2$ of surrogate model, depicts the uncertainty over objective function
-![process_step2](/assets/img/bayesian_opt/process_step2.png)
+<!-- ![process_step2](/assets/img/bayesian_opt/process_step2.png) -->
+{% include figure.html path="/assets/img/bayesian_opt/process_step2.png" class="img-fluid rounded z-depth-1" %}
 
 2. Apply acquisition function $u$ over $P$. As a result, it proposed the next sampling point as blue circle
-![process_step3](/assets/img/bayesian_opt/process_step3.png)
+<!-- ![process_step3](/assets/img/bayesian_opt/process_step3.png) -->
+{% include figure.html path="/assets/img/bayesian_opt/process_step3.png" class="img-fluid rounded z-depth-1" %}
 
 3. Evaluate the proposed sampling point using objective function. We can observe that the uncertainty significantly narrow down. We repeat this process through a number of iterations
-![process_step4](/assets/img/bayesian_opt/process_step4.png)
+<!-- ![process_step4](/assets/img/bayesian_opt/process_step4.png) -->
+{% include figure.html path="/assets/img/bayesian_opt/process_step4.png" class="img-fluid rounded z-depth-1" %}
 
 
 ## Discussion:
