@@ -25,7 +25,7 @@ I am currently the Data&AI Lead at Kyanon Digital. Here's why I am an asset to y
 * Self-directed learning, Strong engineering skill, Perspectives of both Research and Engineer
 * **Top-1** graduate Bachelor in Software Engineering, University of Information Technology, Vietnam National University
 * **5+ years** experience in Research and Engineering
-* **4 papers** as main and first authors
+* **4 papers** as main and first author
 * **1 Best presentation awards**
 * **2 Involved funded projects**
 * **3 Full-semester scholarships**
