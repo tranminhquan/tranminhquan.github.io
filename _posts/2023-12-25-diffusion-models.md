@@ -3,13 +3,13 @@ layout: post
 title: "Diffusion Models: Fundalmentals - Part 1"
 date: 2023-12-25
 description:
-tags: paramsearch bayes probml
+tags: generative-ai diffuson-models
 categories: generative-ai
-thumbnail: assets/img/
+thumbnail: assets/img/diffusion_models/thumbnail.jpg
 giscus_comments: true
 related_posts: true
 toc:
-  sidebar: right
+  sidebar: left
 ---
 
 # What is Diffusion Models
