@@ -32,8 +32,8 @@ toc:
   - name: Math formulation
   - name: Overall training process
   - name: Model backbone
-  - name: Conditional generation
-  - name: Beyond conventional diffusion models
+#   - name: Conditional generation (part 2)
+#   - name: Beyond conventional diffusion models (part 2)
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
@@ -109,7 +109,7 @@ Formally,
 $$
 \begin{equation}
 \label{eq:original_q_forward}
-q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}), \beta_t \mathbf{I})
+q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t \mathbf{I})
 \end{equation}
 $$
 
@@ -134,7 +134,7 @@ $$
 \end{equation}
 $$
 
-On the above equation \eqref{eq:closed_form}, we denote $$\epsilon_t \in \mathcal{N}(0, \mathbf{I})$$. \bar\epsilon_{t} is a merged Gaussian distribution.
+On the above equation \eqref{eq:closed_form}, we denote $$\epsilon_t \in \mathcal{N}(0, \mathbf{I})$$. $$\bar\epsilon_{t}$$ is a merged Gaussian distribution.
 
 From that, the closed form of forward process is defined as 
 
@@ -203,6 +203,7 @@ Derive the above function, we get
 
 $$
 \begin{equation}
+\label{eq:original_loss}
 L := 
 
 \mathbb{E_q} 
@@ -231,6 +232,7 @@ In $$L_{t-1}$$, the term $$q(\mathbf{x}_{t-1} \vert \mathbf{x}_{t}, \mathbf{x}_{
 
 $$
 \begin{equation}
+\label{eq:original_reverse}
     q(\mathbf{x}_{t-1} \vert \mathbf{x}_{t}, \mathbf{x}_{0}) \sim 
             \mathcal{N}(\mathbf{x}_{t-1}, 
             \tilde\mu_t(\mathbf{x}_{t}, \mathbf{x}_0),
@@ -246,10 +248,11 @@ $$
 \end{equation}
 $$
 
-Using the Bayes rules, $$\tilde\mu_t(\mathbf{x}_t, \mathbf{x}_0)$$ can be derived into
+Using the Bayes rules, $$\tilde\mu_t(\mathbf{x}_t, \mathbf{x}_0)$$ in Equation \eqref{eq:original_reverse} can be derived into
 
 $$
 \begin{equation}
+\label{eq:original_mu_noise}
     \tilde\mu_t(\mathbf{x}_t, \mathbf{x}_0) = 
         \frac{\sqrt{\bar\alpha_{t-1}} \beta_t}{1 - \bar\alpha_t} \mathbf{x}_0
         + 
@@ -257,10 +260,11 @@ $$
 \end{equation}
 $$
 
-However, it still depends on two variables, $$\mathbf{x}_0$$ and $$\mathbf{x}_t$$, we want to transform it to only depends on one variable. Because we have a tractable closed-form of $$\mathbf{x}_0$$ and $$\mathbf{x}_t$$ and $$\epsilon_t \sim \mathcal{N}(0, \mathbf{I})$$, the above equation would become
+However, it still depends on two variables, $$\mathbf{x}_0$$ and $$\mathbf{x}_t$$, we want to transform it to only depends on one variable. Because we have a tractable closed-form of $$\mathbf{x}_0$$ and $$\mathbf{x}_t$$ and $$\epsilon_t \sim \mathcal{N}(0, \mathbf{I})$$ in Equation \eqref{eq:closed_form}, the Equation \eqref{eq:original_mu_noise} becomes
 
 $$
 \begin{equation}
+\label{eq:mu_noise}
      \tilde\mu_t(\mathbf{x}_t) =
         \frac{1}{\sqrt{\alpha_t}} (
             \mathbf{x}_{t} - 
@@ -270,19 +274,21 @@ $$
 $$
 
 
-
-Recall the $$p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)$$ derive formula, we can have the same transformation with a learnable $$\epsilon_\theta(\mathbf{x}_t, t)$$ for $$\mu_\theta(\mathbf{x}_t, t)$$
+Recall the $$p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)$$ derive formula in Equation \eqref{eq:original_loss}, we can have the same transformation with a learnable $$\epsilon_\theta(\mathbf{x}_t, t)$$ for $$\mu_\theta(\mathbf{x}_t, t)$$
 
 $$
+\begin{equation}
+\label{eq:mu_learnable_noise}
     \mu_\theta(\mathbf{x}_t, t) = \frac{1}{\sqrt{\alpha_t}} (
             \mathbf{x}_{t} - 
             \frac{1 - \alpha_t}{\sqrt{1 - \bar\alpha_t}} \epsilon_\theta(\mathbf{x}_t, t)
         )
+\end{equation}
 $$
 
 From the above equation, we observe that the generated $$\mathbf{x}_t$$ depends only on a trainable variable, which is $$\epsilon_\theta(\mathbf{x}_t, t)$$, at timestep $$t$$. The problem turns out to predict the noise of the generated image for every step $$t$$ in the denoising process. As a result, we define a neural network to predict $$\epsilon_\theta(\mathbf{x}_t, t)$$
 
-Applying the above derive into the $$L_{t-1}$$, now the objective is to minimize the difference between the current noise and the predicted noise
+Applying \eqref{eq:mu_noise} and \eqref{eq:mu_learnable_noise} into the $$L_{t-1}$$, now the objective is to minimize the difference between the current noise and the predicted noise
 
 $$
 \begin{equation}
@@ -304,7 +310,7 @@ $$
 \end{equation}
 $$
 
-By discarding the regulaization term, Ho et al. <d-cite key="ho2020_denoising"> come with a simpler version
+By discarding the regulaization term, Ho et al. proposed with a simpler version <d-cite key="ho2020_denoising"> 
 
 $$
 \begin{equation}
@@ -377,7 +383,3 @@ The two process are summarized as follow Algorithms
 {% include figure.html path="/assets/img/diffusion_models/training_sampling_algorithms.png" class="img-fluid rounded z-depth-1" %}
 
 ## Model backbone
-
-## Conditional generation
-
-## Beyond conventional diffusion models
