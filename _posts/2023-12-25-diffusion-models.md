@@ -128,7 +128,7 @@ $$
 \end{equation}
 $$
 
-On the above equation \eqref{eq:closed_form}, we denote $\epsilon_t \in \mathcal{N}(0, \mathbf{I})$. \bar\epsilon_{t} is a merged Gaussian distribution.
+On the above equation \eqref{eq:closed_form}, we denote $$\epsilon_t \in \mathcal{N}(0, \mathbf{I})$$. \bar\epsilon_{t} is a merged Gaussian distribution.
 
 From that, the closed form of forward process is defined as 
 
