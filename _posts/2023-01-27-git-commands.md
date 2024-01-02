@@ -4,7 +4,7 @@ title: Beginner to git? This post is for you
 date: 2023-01-27 11:25:00
 description:
 tags: fundamentals inanutshell git
-categories: fundamentals-engineering
+categories: engineering
 thumbnail: assets/img/git_commands/thumbnail.jpg
 giscus_comments: true
 related_posts: true

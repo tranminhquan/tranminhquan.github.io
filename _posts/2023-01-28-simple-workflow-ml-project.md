@@ -4,7 +4,7 @@ title: A (very) simple ML workflow for beginners
 date: 2023-02-08 11:25:00
 description:
 tags: fundamentals inanutshell workflow
-categories: fundamentals-engineering
+categories: engineering
 thumbnail: assets/img/simple_mlworkflow/thumbnail.jpg
 giscus_comments: true
 related_posts: true

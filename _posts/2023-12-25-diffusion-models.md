@@ -4,6 +4,8 @@ title: "Diffusion Models: Fundalmentals - Part 1"
 date: 2024-01-02
 description:
 tags: generative-ai diffuson-models
+categories: generative-ai computer-vision
+thumbnail: assets/img/diffusion_models/thumbnail.jpg
 giscus_comments: true
 related_posts: true
 featured: true  

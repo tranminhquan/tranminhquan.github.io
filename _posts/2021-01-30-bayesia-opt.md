@@ -1,6 +1,6 @@
 ---
-layout: post
-title: Bayesian Optimization
+layout: distill
+title: "Bayesian Optimization"
 date: 2021-01-30
 description:
 tags: paramsearch bayes probml
@@ -8,27 +8,69 @@ categories: probabilistic-ml
 thumbnail: assets/img/bayesian_opt/open_discussion.png
 giscus_comments: true
 related_posts: true
+featured: true  
+
+authors:
+  - name: Quan Tran
+    affiliations:
+      name: RnD Department, Kyanon Digital
+
+bibliography: bayesian-optimization.bib
+
+# Optionally, you can add a table of contents to your post.
+# NOTES:
+#   - make sure that TOC names match the actual section names
+#     for hyperlinks within the post to work correctly.
+#   - we may want to automate TOC generation in the future using
+#     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
 toc:
-  sidebar: right
+  - name: Opening Discussion
+    # if a section has subsections, you can add them as follows:
+    # subsections:
+    #   - name: Example Child Subsection 1
+    #   - name: Example Child Subsection 2
+  - name: Levels of Optimization Problem Solving
+  - name: Bayesian Optimization
+  - name: Implementation
+
+# Below is an example of injecting additional post-specific styles.
+# If you use this post as a template, delete this _styles block.
+_styles: >
+  .fake-img {
+    background: #bbb;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+  }
+  .fake-img p {
+    font-family: monospace;
+    color: white;
+    text-align: left;
+    margin: 12px 0;
+    text-align: center;
+    font-size: 16px;
+  }
+
 ---
+
 # Opening Discussion
 <!-- ![open_discussion](/assets/img/bayesian_opt/open_discussion.png) -->
 {% include figure.html path="/assets/img/bayesian_opt/open_discussion.png" class="img-fluid rounded z-depth-1" %}
 
 # Levels of Optimization Problem Solving
 
-In general, we can divided the way to solve optmization problem into $3$ levels:
+In general, we can divided the way to solve optmization problem into $$3$$ levels:
 
 * **Level 0**: Non-derivative, including some familiar approaches such as: Grid Search, Random Search, Bayesian Optimization, etc.
   - Pros: Fast computation, do not require the function to be smooth, i.e. no differentiable required, the function need continous
   - Cons: It is heuristic, not a theory-based method
 
 
-* **Level 1**: First-derivative. $∇f(x) = f(x_i)_i$. The most popular one is Gradient Descent (Adam, Nesterov, etc.)
+* **Level 1**: First-derivative. $$∇f(x) = f(x_i)_i$$. The most popular one is Gradient Descent (Adam, Nesterov, etc.)
   - Pros: Efficient to converge in local minimum/maximum
   - Cons: Computational since it requires backpropagation
 
-* **Level 2**: Second-derivatie. $J(f) = f(x_i, x_j)_{ij}$ (i.e. Newton)
+* **Level 2**: Second-derivatie. $$J(f) = f(x_i, x_j)_{ij}$$ (i.e. Newton)
   - Pros: Very effective, faster convergence than level-1 method
   - Cons: Significantly compuational
 
@@ -38,7 +80,7 @@ Bayesian Optimization is the one in level 0
 # Bayesian Optimization
 
 ## When to use Bayesian Optimization
-Supose that we are optimzing a function $f(x, \Theta)$
+Supose that we are optimzing a function $$f(x, \Theta)$$
 $$
 \max_{\Theta}f(x,\Theta)
 $$
@@ -49,26 +91,26 @@ We can consider Bayesian Optimzation if $f$ satisfy following conditions:
 * $f$ is a blackbox. In other words, we don't know characteristic of $f$ (convex, non-convex, derivative, etc.)
 
 ## Fundementals of Bayesian Optmization
-Instead of directly optimizing $f$, we approximate it by other easier evaluation function $P$, and define a strategy $u$ to optimize $P$
+Instead of directly optimizing $f$, we approximate it by other easier evaluation function $$P$$, and define a strategy $u$ to optimize $$P$$
 
-* $P$ - **Surrogate model**: 
-  - the alternative of $f$, easier to optmize
+* $$P$$ - **Surrogate model**: 
+  - the alternative of $$f$$, easier to optmize
   - Gaussian Process, etc.
-* $u$ - **Acquisition function**: 
+* $$u$$ - **Acquisition function**: 
   - strategy to optmize surrogate model
   - Expected Improvement (EI), Upper Condidence Bound (UCB), etc.
 
 In this article, we focus on the most popular surrogate model - the Gaussian Process
 
 ## Gaussian Process
-As mentioned, $f$ is black box and expensive to evaluate. Hence, the surrogate model should be an alternative that is easier to evaluate. A good intuition is to approximate $f$ as a distribution (normally Gaussian Distribution).  
-In other words, we consider $f$ as a Gaussian Distribution with mean $\mu(x)$ and standard deviation $\sigma^2(x)$
+As mentioned, $$f$$ is black box and expensive to evaluate. Hence, the surrogate model should be an alternative that is easier to evaluate. A good intuition is to approximate $$f$$ as a distribution (normally Gaussian Distribution).  
+In other words, we consider $$f$$ as a Gaussian Distribution with mean $$\mu(x)$$ and standard deviation $$\sigma^2(x)$$
 
 $$
 f(x) \sim \mathcal{N}(\mu(x), \sigma^2(x))
 $$
 
-Hence, the Gaussian Process $P$ has the Probability Density Function (PDF) as
+Hence, the Gaussian Process $$P$$ has the Probability Density Function (PDF) as
 
 $$
 P(f(x)=y) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp{\frac{|y - \mu(x)|^2}{2\sigma^2}}
@@ -77,17 +119,17 @@ $$
 The figure below demonstrates it as a distribution approximation
 <!-- ![process_step1](/img/bayesian_opt/process_step1.png) -->
 
-Therefore, Gaussian Process makes use of Bayes Theory. Since we literally has no information about how $f$ looks like (*the solid red line*), we just has some initial observations (*blue circle*). **The surrogate model gives us a probabilistic estimation of $f$ as a distribution (*the area limited by dash red line*)**
+Therefore, Gaussian Process makes use of Bayes Theory. Since we literally has no information about how $$f$$ looks like (*the solid red line*), we just has some initial observations (*blue circle*). **The surrogate model gives us a probabilistic estimation of $f$ as a distribution (*the area limited by dash red line*)**
 
-From this, we need to select the next point (i.e. $x_+$) to sample from $f$. The strategy to select the next point from the observation of surrogate model is taken by **acquisition function**.
+From this, we need to select the next point (i.e. $$x_+$$) to sample from $$f$$. The strategy to select the next point from the observation of surrogate model is taken by **acquisition function**.
 
-After the next point is sampled, i.e. $\{x_+, y=f(x_+)\}$. We continue to fit it as prior knowledge to surrogate model and continue to select next point, i.e. $x_{++}$. Gradually, we will have a more knowledge on how $f$ looks like as the belief keeps increasing.
+After the next point is sampled, i.e. $$\{x_+, y=f(x_+)\}$$. We continue to fit it as prior knowledge to surrogate model and continue to select next point, i.e. $$x_{++}$$. Gradually, we will have a more knowledge on how $$f$$ looks like as the belief keeps increasing.
 
 ## Acquisition function
 
-The strategy that proposes the next sampling point is decided by acquisition function $u$.
-Particularly, we optimize $u$ over surrogate model $P$. Note that as mentioned, those functions are easier to optimize comparing to $f$  
-There are lots of **acquisition function**, the most popular ones are **Expected Improvement** $EI$, and **Upper Confidence Bound** $UCB$. In this article, we define $EI$ as the acquisition function.
+The strategy that proposes the next sampling point is decided by acquisition function $$u$$.
+Particularly, we optimize $$u$$ over surrogate model $$P$$. Note that as mentioned, those functions are easier to optimize comparing to $$f$$  
+There are lots of **acquisition function**, the most popular ones are **Expected Improvement** $$EI$$, and **Upper Confidence Bound** $$UCB$$. In this article, we define $$EI$$ as the acquisition function.
 
 Expected Improvement function is defined as
 $$
@@ -118,19 +160,19 @@ Z =
 \end{cases}
 $$
 
-The adjusted parameter $\xi$ is use to balance between *exploitation* and *exploration* of two summation terms in the above equation, respectively.
+The adjusted parameter $$\xi$$ is use to balance between *exploitation* and *exploration* of two summation terms in the above equation, respectively.
 
-High $\xi$ means we lower the probability of first term (the one calculating with mean $\mu$, i.e. the certainty), hence, increase the probability of second term (the one calculating with variance $\sigma$, i.e. the uncertainty) --> we want to explore on the area of uncertainty more, and vice versa.
+High $$\xi$$ means we lower the probability of first term (the one calculating with mean $$\mu$$, i.e. the certainty), hence, increase the probability of second term (the one calculating with variance $$\sigma$$, i.e. the uncertainty) --> we want to explore on the area of uncertainty more, and vice versa.
 
 ## The complete process
 
 In summary, the overall process of Bayesian Optimization can be clarified as follows:
-    We want to find the optimal values of objective function $f$ with **surrogate model** $P$ and **acquisition function** $u$. Initially, we have limited observations $D={x_N, y_N}$. The iteration below is how Bayesian Optimization works:  
+    We want to find the optimal values of objective function $$f$$ with **surrogate model** $$P$$ and **acquisition function** $$u$$. Initially, we have limited observations $$D={x_N, y_N}$$. The iteration below is how Bayesian Optimization works:  
     ---   
-    1. Fit ${x_N, y_N}$ to approximate surrogate model $P$  
-    2. Optimize acquisition function $u$ over $P$ to sample the next point $x_{N+} = u(x)$  
-    3. Evaluate $\{x_{N+}\}$ on $f$ to get $y_{N+}$  
-    4. Add $\{x_{N+}, y_{N+}\}$ to D and repeat the process  
+    1. Fit $${x_N, y_N}$$ to approximate surrogate model $$P$$  
+    2. Optimize acquisition function $$u$$ over $$P$$ to sample the next point $$x_{N+} = u(x)$$  
+    3. Evaluate $$\{x_{N+}\}$$ on $$f$$ to get $$y_{N+}$$  
+    4. Add $$\{x_{N+}, y_{N+}\}$$ to D and repeat the process  
 
 The detail about implementation from scratch can be found at [[4]](http://krasserm.github.io/2018/03/19/gaussian-processes/)
 
@@ -142,11 +184,11 @@ Suppose we want to find the values that maximize the objective function below (w
 {% include figure.html path="/assets/img/bayesian_opt/process_step1.png" class="img-fluid rounded z-depth-1" %}
 
 
-1. Approximate a surrogate model $P$ (i.e. Gaussian Process). The green area is CI - Confidence Interval drawn from $\sigma^2$ of surrogate model, depicts the uncertainty over objective function
+1. Approximate a surrogate model $$P$$ (i.e. Gaussian Process). The green area is CI - Confidence Interval drawn from $$\sigma^2$$ of surrogate model, depicts the uncertainty over objective function
 <!-- ![process_step2](/assets/img/bayesian_opt/process_step2.png) -->
 {% include figure.html path="/assets/img/bayesian_opt/process_step2.png" class="img-fluid rounded z-depth-1" %}
 
-2. Apply acquisition function $u$ over $P$. As a result, it proposed the next sampling point as blue circle
+2. Apply acquisition function $$u$$ over $$P$$. As a result, it proposed the next sampling point as blue circle
 <!-- ![process_step3](/assets/img/bayesian_opt/process_step3.png) -->
 {% include figure.html path="/assets/img/bayesian_opt/process_step3.png" class="img-fluid rounded z-depth-1" %}
 
