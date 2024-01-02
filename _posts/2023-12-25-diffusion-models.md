@@ -100,7 +100,9 @@ Diffusion model is a Markov Chain process with two stages: forward and reverse.
 
 ### Forward process
 
-{% include figure.html path="/assets/img/diffusion_models/forward_process.png" class="img-fluid rounded z-depth-1" %}
+<div class="l-body-outset">
+{% include figure.html path="/assets/img/diffusion_models/forward_process.png"%}
+</div>
 
 * In the forward process, at timestep t, we have the noised image $$\mathbf{x}_t$$ by adding noise from a distribution (normally Gaussian) to the previous image $$\mathbf{x}_{t-1}$$, this process is denoted as $$q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$$
 
@@ -166,8 +168,9 @@ $$
 \end{equation}
 $$
 
-
-{% include figure.html path="/assets/img/diffusion_models/reverse_process.png" class="img-fluid rounded z-depth-1" %}
+<div class="l-body-outset">
+{% include figure.html path="/assets/img/diffusion_models/reverse_process.png"%}
+</div>
 
 ### Objective function
 We optimize the ELBO function on the negative log-likelihod function.
@@ -380,6 +383,8 @@ The sampling process is when we want to generate the image from the noise distri
 
 The two process are summarized as follow Algorithms
 
-{% include figure.html path="/assets/img/diffusion_models/training_sampling_algorithms.png" class="img-fluid rounded z-depth-1" %}
+<div class="l-body-outset">
+{% include figure.html path="/assets/img/diffusion_models/training_sampling_algorithms.png"%}
+</div>
 
 ## Model backbone
