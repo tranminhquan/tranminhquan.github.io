@@ -1,18 +1,59 @@
 ---
-layout: post
+layout: distill
 title: "Diffusion Models: Fundalmentals - Part 1"
 date: 2023-12-25
 description:
 tags: generative-ai diffuson-models
-categories: generative-ai
-thumbnail: assets/img/diffusion_models/thumbnail.jpg
 giscus_comments: true
 related_posts: true
+featured: true
+
+authors:
+  - name: Quan Tran
+    affiliations:
+      name: RnD Department, Kyanon Digital
+
+bibliography:
+
+# Optionally, you can add a table of contents to your post.
+# NOTES:
+#   - make sure that TOC names match the actual section names
+#     for hyperlinks within the post to work correctly.
+#   - we may want to automate TOC generation in the future using
+#     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
 toc:
-  sidebar: left
+  - name: What is Diffusion Models
+    # if a section has subsections, you can add them as follows:
+    # subsections:
+    #   - name: Example Child Subsection 1
+    #   - name: Example Child Subsection 2
+  - name: Math formulation
+  - name: Overall training process
+  - name: Model backbone
+  - name: Conditional generation
+  - name: Beyond conventional diffusion models
+
+# Below is an example of injecting additional post-specific styles.
+# If you use this post as a template, delete this _styles block.
+_styles: >
+  .fake-img {
+    background: #bbb;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+  }
+  .fake-img p {
+    font-family: monospace;
+    color: white;
+    text-align: left;
+    margin: 12px 0;
+    text-align: center;
+    font-size: 16px;
+  }
+
 ---
 
-# What is Diffusion Models
+## What is Diffusion Models
 * Motivation
     * From VAE: the same concept but gradually
     * From GAN: the same concept that generate from noise
@@ -30,7 +71,7 @@ toc:
     * to GAN: more stable in training
     * to VAE: 
 
-## General concept
+### General concept
 
 The general objective is to gradually adding noise to the original image unitl it completely becames noise, and then try to generate back to the original image from the existing noise. By learning this process, a diffusion model is expected to learn how to generate an image from a noise distribution by learning the denoising process.
 
@@ -45,17 +86,17 @@ Diffusion model is a Markov Chain process with two stages: forward and reverse.
 * Objective function:
     * Similar to VAE, diffusion model optimizes the evidence lower bound (ELBO), which means we want to maximize the log-likelihood between the original image and the generated one.
 
-# Math formulation
+## Math formulation
 
-* We denote the real data distribution as $q(x)$
-* A data point (real image) is sampled as $\mathbf{x}_0 \sim q(\mathbf{x})$
-* The Markov chains is defined as $T$ finite steps
+* We denote the real data distribution as $$q(x)$$
+* A data point (real image) is sampled as $$\mathbf{x}_0 \sim q(\mathbf{x})$$
+* The Markov chains is defined as $$T$$ finite steps
 
-## Forward process
+### Forward process
 
 {% include figure.html path="/assets/img/diffusion_models/forward_process.png" class="img-fluid rounded z-depth-1" %}
 
-* In the forward process, at timestep t, we have the noised image $x_t$ by adding noise from a distribution (normally Gaussian) to the previous image $\mathbf{x}_{t-1}$, this process is denoted as $q(\mathbf{x}_t | \mathbf{x}_{t-1})$. Formally,
+* In the forward process, at timestep t, we have the noised image $x_t$ by adding noise from a distribution (normally Gaussian) to the previous image $$\mathbf{x}_{t-1}$, this process is denoted as $q(\mathbf{x}_t | \mathbf{x}_{t-1})$$. Formally,
 
 $$
 q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}), \beta_t \mathbf{I})
@@ -83,7 +124,7 @@ $$
 
 
 
-## Reverse process
+### Reverse process
 * Theoretically, the reverse process would be $q(\mathbf{x}_{t-1} | \mathbf{x}_{t})$.
 * However, to find out the above distribution, we need to figure out the wholte data distribution, which is impractical
 * The alternative is the reparameterizatin trick, sample from mean and distribution of the previous distribution. The approximation is $p_{\theta}(\mathbf{x}_{t-1} | \mathbf{x}_t)$.
@@ -97,7 +138,7 @@ $$
 
 {% include figure.html path="/assets/img/diffusion_models/reverse_process.png" class="img-fluid rounded z-depth-1" %}
 
-## Objective function
+### Objective function
 We optimize the ELBO function on the negative log-likelihod function.
 $$
 \mathbb{E}[-\log p_{\theta}(\mathbf{x_0})] 
@@ -234,16 +275,16 @@ $$
 
 where $C$ is a constant
 
-### *Explanation for the impractical of $q(\mathbf{x}_{t-1} | \mathbf{x}_{t})$.
+#### *Explanation for the impractical of $q(\mathbf{x}_{t-1} | \mathbf{x}_{t})$.
 
-### *Explanation for the reparameterization trick
+#### *Explanation for the reparameterization trick
 
-### *Bayes rule to expand the $q(\mathbf{x}_{t} | \mathbf{x}_{t-1}, \mathbf{x}_{0})$
+#### *Bayes rule to expand the $q(\mathbf{x}_{t} | \mathbf{x}_{t-1}, \mathbf{x}_{0})$
 
-# Overall training process
+## Overall training process
 The process of developing diffusion model consitst of training and sampling.
 
-## Training
+### Training
 For each training step:
 * Sample an original image from the dataset: $\mathbf{x}_0 \sim q(\mathbf{x}_0)$
 * Sample range of timestep $t$ in range (1, $T$), for example, sampling with a uniform: $t \sim \text{Uniform}(\{1, \dots, T\})$
@@ -251,7 +292,7 @@ For each training step:
 * Calculate the gradient folllowing the loss function:
 $ \Delta_\theta || \epsilon - \epsilon_\theta(\sqrt{\alpha_t} \mathbf{x}_0 + \sqrt{1 - \bar\alpha_t} \epsilon_t, t)||^2 $
 
-## Sampling
+### Sampling
 The sampling process is when we want to generate the image from the noise distribution.
 
 * First, we generate the noise: $\mathbf{x}_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$
@@ -276,8 +317,8 @@ The sampling process is when we want to generate the image from the noise distri
 The two process are summarized as follow Algorithms
 
 {% include figure.html path="/assets/img/diffusion_models/training_sampling_algorithms.png" class="img-fluid rounded z-depth-1" %}
-# Model backbone
+## Model backbone
 
-# Conditional generation
+## Conditional generation
 
-# Beyond conventional diffusion models
+## Beyond conventional diffusion models
