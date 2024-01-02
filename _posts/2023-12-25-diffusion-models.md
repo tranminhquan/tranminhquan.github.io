@@ -55,7 +55,7 @@ _styles: >
 
 ---
 
-## What is Diffusion Models
+## What is Diffusion Model
 * Motivation
     * From VAE: the same concept but gradually
     * From GAN: the same concept that generate from noise
