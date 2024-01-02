@@ -55,6 +55,10 @@ _styles: >
 
 ---
 
+Update history
+* 20.12.2023: Created
+* 02.01.2023: Update the math formulation
+
 ## What is Diffusion Model
 * Motivation
     * From VAE: the same concept but gradually
