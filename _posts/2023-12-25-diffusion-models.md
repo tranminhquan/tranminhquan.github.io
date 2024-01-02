@@ -240,7 +240,7 @@ $$
 \end{equation}
 $$
 
-Using the Bayes rules, $\tilde\mu_t(\mathbf{x}_t, \mathbf{x}_0)$ can be derived into
+Using the Bayes rules, $$\tilde\mu_t(\mathbf{x}_t, \mathbf{x}_0)$$ can be derived into
 
 $$
 \begin{equation}
@@ -251,7 +251,7 @@ $$
 \end{equation}
 $$
 
-However, it still depends on two variables, $\mathbf{x}_0$ and $\mathbf{x}_t$, we want to transform it to only depends on one variable. Because we have a tractable closed-form of $\mathbf{x}_0$ and $\mathbf{x}_t$ and $\epsilon_t \sim \mathcal{N}(0, \mathbf{I})$, the above equation would become
+However, it still depends on two variables, $$\mathbf{x}_0$$ and $$\mathbf{x}_t$$, we want to transform it to only depends on one variable. Because we have a tractable closed-form of $$\mathbf{x}_0$$ and $$\mathbf{x}_t$$ and $$\epsilon_t \sim \mathcal{N}(0, \mathbf{I})$$, the above equation would become
 
 $$
 \begin{equation}
@@ -317,7 +317,7 @@ $$
 \end{equation}
 $$
 
-where $C$ is a constant
+where $$C$$ is a constant
 
 {% details Explanation for the impractical of $$q(\mathbf{x}_{t-1} \vert \mathbf{x}_{t})$$ %}
 TODO
