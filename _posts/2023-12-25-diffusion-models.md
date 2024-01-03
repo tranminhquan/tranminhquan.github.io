@@ -32,6 +32,8 @@ toc:
   - name: Math formulation
   - name: Overall training process
   - name: Model backbone
+  - name: Summary
+  - name: Implementation
 #   - name: Conditional generation (part 2)
 #   - name: Beyond conventional diffusion models (part 2)
 
@@ -57,7 +59,8 @@ _styles: >
 
 Update history
 * 20.12.2023: Created
-* 02.01.2023: Update the math formulation
+* 02.01.2024: Update the math formulation
+* 03.01.2024: Update the model backbone
 
 ## What is Diffusion Model
 * Motivation
@@ -142,6 +145,7 @@ From that, the closed form of forward process is defined as
 
 $$
 \begin{equation}
+\label{eq:closed_form_forward}
 q(\mathbf{x}_t | \mathbf{x}_{0}) = \mathcal{N}
     \left(
         \mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_{0}, (1 - \bar{\alpha}_t) \mathbf{I}
@@ -317,6 +321,7 @@ By discarding the regulaization term, Ho et al. proposed with a simpler version 
 
 $$
 \begin{equation}
+\label{eq:simple_loss_function}
     L_{t}^{\text{simple}} = \mathbb{E}_{\mathbf{x}_0, \epsilon}
         \left[
             || \epsilon_t - \epsilon_\theta(\sqrt{\alpha_t} \mathbf{x}_0 + \sqrt{1 - \bar\alpha_t} \epsilon_t, t) ||^2
@@ -388,3 +393,323 @@ The two process are summarized as follow Algorithms
 </div>
 
 ## Model backbone
+Any model can be used as the backbone for a diffusion model.
+However, for the baseline Denoising Diffusion Probabilistic Model (DDPM), Ho et al. <d-cite key="ho2020_denoising"> propose to leverage U-Net as the backbone.
+
+The advatange of U-Net architecture can be listed as follows:
+* U-Net is a symetric architecture and is well-known for its application in segmentation. This means the architecture itself is potential for denoising tasks.
+* The conventional structure of U-Net has encoder as the downsampling and decoder as the upsampling, with residual connection, which is similar to Auto-Encoder-based models.
+* U-Net has many variants, the recent famous one is Attenion U-Net consisting of Wide Resnet blocks, Group Normalization, and Self-attention Blocks.
+* However, to leverage the U-Net as the backbone, we need to differentiate between each timestep t. This can be resolved by using a Position Encoding. In <d-cite key="ho2020_denoising">, the authors use SinusoidalPositionEmbeddings.
+
+<div class="l-body-outset">
+{% include figure.html path="/assets/img/diffusion_models/attention_unet.png"%}
+</div>
+
+## Summary
+
+
+## Implementation
+
+### Training process
+Following the above algorithm
+
+* Sample an original image from the dataset: $$\mathbf{x}_0 \sim q(\mathbf{x}_0)$$.
+* Sample range of timestep $$t$$ in range $$(1, T)$$, for example, sampling with a uniform: $$t \sim \text{Uniform}(\{1, \dots, T\})$$. In this step, we generate range of timestep with corresponding $$\beta_t$$.
+* Sample noise: $$\epsilon \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$$. In this step, we sample noise and generate the noisy image at timestep $$t$$ following Equation \eqref{eq:closed_form_forward}.
+* Calculate the gradient folllowing the loss function:
+$$ \Delta_\theta || \epsilon - \epsilon_\theta(\sqrt{\alpha_t} \mathbf{x}_0 + \sqrt{1 - \bar\alpha_t} \epsilon_t, t)||^2 $$. In this step, we calculate between the output of the model and the noisy image from the above step using Equation \eqref{eq:simple_loss_function}
+
+
+As a result, in summary, we will implement the process as follow:
+* Timestep and corresponding beta scheduler given number of steps
+* Sample a noisy image at a timestep $$t$$ with Equation \eqref{eq:closed_form_forward}.
+* Define the loss function to calculate Equation \eqref{eq:simple_loss_function}
+
+#### Timestep and beta scheduler
+
+The importance of forward process is to define how we generate number of finite timestep in range $$(0, T)$$.
+The original DDPM paper uses the linear schedule for simple.
+
+Recall Equation \eqref{eq:original_q_forward} with $$\beta_t$$ as the parameter to control the level of noise. In the original implementation, the authors choose to scale linearly from $$\beta_1 = 10^{-4}$$ to $$\beta_T = 0.02$$. So we implement the same way.
+
+We define `linear_beta_schedule` as the linear timestep scheduler with an input as the number of timesteps `n_steps`
+
+```python
+def linear_beta_schedule(n_steps):
+    beta_start = 0.0001
+    beta_end = 0.02
+    
+    return torch.linspace(beta_start, beta_end, n_steps)
+```
+
+We also need to prepare corresponding $$\alpha_t$$ and $$\bar\alpha_t$$. The following code prepare the list of `alpha` and utilization function to retrieve given timesteps
+
+```python
+# define alphas
+alphas = 1 - betas
+cumprod_alphas = torch.cumprod(alphas, axis=0) # bar_alpha
+
+```
+
+```python
+# util function to retrive data at timestep t
+
+def extract(data, t, out_shape):
+    """Extract from the list of data the t-element and reshape to the given_shape
+
+    Args:
+        data (list or tensor): input list of tensor of data to retrieve
+        t (int): t element to retrieve data
+        out_shape (tuple): output shape
+
+    Returns:
+        tensor: retrieved data with dedicated shape
+    """
+    batch_size = t.shape[0]
+    out = data.gather(-1, t.cpu())
+    return out.reshape(batch_size, *((1,) * (len(out_shape) - 1))).to(t.device)
+```
+
+#### Sample a noisy image at a timestep
+
+Recall the Equation \eqref{eq:closed_form_forward} 
+
+$$
+    q(\mathbf{x}_t | \mathbf{x}_{0}) = \mathcal{N}
+        \left(
+            \mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_{0}, (1 - \bar{\alpha}_t) \mathbf{I}
+        \right)
+$$
+
+We implement a function to get noised image at any given timestep with given original image.
+
+```python
+def sample_noised_image(x_start, timestep, noise=None):
+    """Sample a noised image at a timestep
+
+    Args:
+        x_start (tensor): x0, original image
+        timestep (_type_): timestep t
+        noise (_type_, optional): noise type. Defaults to None.
+    """
+    
+    if noise is None:
+        noise = torch.randn_like(x_start)
+    
+    cumprod_alpha_t = extract(cumprod_alphas, timestep, x_start.shape)
+    
+    noised_t = (torch.sqrt(cumprod_alpha_t) * x_start) + (torch.sqrt(1 - cumprod_alpha_t) * noise)
+    
+    return noised_t
+    
+```
+
+#### Define the transform and inverse transform process
+
+The transform process takes original image from PIL and transform to torch tensor data
+```python
+image_size = 128
+transform = Compose([
+    Resize(image_size),
+    CenterCrop(image_size),
+    ToTensor(), # turn into torch Tensor of shape CHW, divide by 255
+    Lambda(lambda t: (t * 2) - 1),
+    
+])
+```
+
+The inverse transform process convert the tensor data back to the PIL image
+```python
+reverse_transform = Compose([
+     Lambda(lambda t: (t + 1) / 2),
+     Lambda(lambda t: t.permute(1, 2, 0)), # CHW to HWC
+     Lambda(lambda t: t * 255.),
+     Lambda(lambda t: t.numpy().astype(np.uint8)),
+     ToPILImage(),
+])
+```
+
+#### Demo the forwarding process
+
+{::nomarkdown}
+{% assign jupyter_path = "assets/jupyter/demo_forwarding_diffusion_models.ipynb" | relative_url %}
+{% capture notebook_exists %}{% file_exists assets/jupyter/demo_forwarding_diffusion_models.ipynb %}{% endcapture %}
+{% if notebook_exists == "true" %}
+    {% jupyter_notebook jupyter_path %}
+{% else %}
+    <p>Sorry, the notebook you are looking for does not exist.</p>
+{% endif %}
+{:/nomarkdown}
+
+#### Define the loss function
+
+From Equation \eqref{eq:simple_loss_function}, we can apply any conventional function such as L1, MSE, etc. to calculate the different between noised image at timestep $$t$$ and the predicted noise from the model.
+
+```python
+def loss(denoise_model, x_start, timestep, noise=None, loss_type='mse'):
+    if noise is None:
+        noise = torch.randn_like(x_start)
+        
+    x_noise = sample_noised_image(x_start, timestep, noise)
+    predicted_noise = denoise_model(x_start, timestep)
+    
+    if loss_type == 'mse':
+        F.mse_loss(x_noise, predicted_noise)
+    else:
+        raise NotImplementedError()
+    
+    return loss
+```
+
+The above code takes `denoise_model` into account, which is neural network that we will implement.
+The model will predict the noise at timestep $$t$$ given the original image.
+In the next section, we will implement the model as the Attention U-Net.
+
+### Attention U-Net
+
+There are modules we need to implement
+* Positional Embeddings
+* ResNet Block
+* Attention Block
+* Group Normalization
+
+
+#### Positional Embeddings
+For each above timestep $$t$$, we need to generate a positional embedding to differentiate between each timestep. The most common is to follow <d-cite key="vaswani2017_attention"> with Sinusodial Positional Embedding.
+
+```python
+class SinusodialPositionalEmbeddings(nn.Module):
+    def __init__(self, dim) -> None:
+        super().__init__()
+        self.dim = dim
+        
+    def forward(self, timestep):
+        device = timestep.device
+        half_dim = self.dim // 2
+        embeddings = math.log(10000) / (half_dim - 1)
+        embeddings = torch.exp(torch.arange(half_dim, device=device) * -embeddings)
+        embeddings = timestep[:, None] * embeddings[None, :]
+        embeddings = torch.cat((embeddings.sin(), embeddings.cos()), dim=-1)
+        
+        return embeddings
+```
+
+#### ResNet block
+
+```python
+class Block(nn.Module):
+    """A unit block in ResNet module. Each block consists of a projection module, a group normalization, and an activation
+
+    Args:
+        nn (_type_): _description_
+    """
+    def __init__(self, in_dim, out_dim, groups=8, act_fn = nn.SiLU) -> None:
+        super().__init__()
+        
+        self.proj = nn.Conv2d(in_dim, out_dim, 3, padding=1)
+        self.norm = nn.GroupNorm(groups, out_dim)
+        self.act_fn = act_fn()
+        
+    def forward(self, x, scale_shift=None):
+        x = self.proj(x)
+        x = self.norm(x)
+        
+        if scale_shift:
+            scale, shift = scale_shift
+            x = (x * (scale + 1)) + shift
+        
+        x = self.act_fn(x)
+        
+        return x
+```
+
+```python
+class ResNetBlock(nn.Module):
+    def __init__(self, in_dim, out_dim, *, time_emb_dim=None, groups=8, act_fn = nn.SiLU) -> None:
+        super().__init__()
+        
+        self.mlp = (
+            nn.Sequential(
+                act_fn(),
+                nn.Linear(time_emb_dim, 2 * out_dim)
+            )
+            if time_emb_dim
+            else None
+        )
+        
+        self.block1 = Block(in_dim, out_dim, groups, act_fn)
+        self.block2 = Block(out_dim, out_dim, groups, act_fn)
+        
+        self.res_conv = nn.Conv2d(in_dim, out_dim, 1) if in_dim != out_dim else nn.Identity()
+        
+    def forward(self, x, time_emb=None):
+        scale_shift = None
+        
+        if self.mlp and time_emb:
+            time_emb = self.mlp(time_emb)
+            time_emb = rearrange(time_emb, "b c -> b c 1 1")
+            scale_shift = time_emb.chunk(2, dim=1)
+            
+        h = self.block1(x, scale_shift)
+        h = self.block2(h)
+        
+        
+        return h + self.res_conv(x)
+```
+
+#### Attention Block
+We follow the implementation of the paper <d-cite key="vaswani2017_attention">
+
+```python
+from torch import einsum
+
+class Attention(nn.Module):
+    def __init__(self, dim, heads=4, head_dim=32) -> None:
+        super().__init__()
+        
+        self.scale = head_dim * -0.5
+        self.heads = heads
+        
+        hidden_dim = head_dim * heads
+        
+        self.qkv_proj = nn.Conv2d(dim, hidden_dim * 3, 1, bias=False)
+        self.out_proj = nn.Conv2d(hidden_dim, dim, 1)
+        
+    def forward(self, x):
+        b, c, h, w = x.shape
+        
+        qkv = self.qkv_proj(x).chunk(3, dim=1)
+        q, k, v = map(
+            lambda t : rearrange(t, "b (h c) x y -> b h c (x y)", h=self.heads), qkv
+        )
+        q = q * self.scale
+        
+        sim = einsum("b h d i, b h d j -> b h i j", q, k)
+        sim = sim - sim.amax(dim=-1, keepdim=True).detach()
+        attn = sim.softmax(dim=-1)
+        
+        out = einsum("b h i j, b h d j -> b h i d", attn, v)
+        out = rearrange(out, "b h (x y) d -> b (h d) x y", x=h, y=w)
+        
+        return self.out_proj(out)
+```
+
+#### Group Normalization
+
+```python
+class GNorm(nn.Module):
+    def __init__(self, dim, fn) -> None:
+        super().__init__()
+        
+        self.fn = fn
+        self.groupnorm = nn.GroupNorm(1, dim)
+        
+    def forward(self, x):
+        x = self.groupnorm(x)
+        x = self.fn(x)
+        
+        return x
+```
+
+#### The whole model
