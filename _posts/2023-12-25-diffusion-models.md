@@ -61,6 +61,7 @@ Update history
 * 20.12.2023: Created
 * 02.01.2024: Update the math formulation
 * 03.01.2024: Update the model backbone
+* 04.01.2024: Update the implementation
 
 ## What is Diffusion Model
 * Motivation
@@ -128,7 +129,7 @@ $$
 \label{eq:closed_form}
 \begin{aligned}
     \mathbf{x}_t
-    &= \sqrt{1 - \alpha_t} \mathbf{x}_{t-1} + \sqrt{\beta_t} \epsilon_{t-1} \\
+    &= \sqrt{\alpha_t} \mathbf{x}_{t-1} + \sqrt{1 - \alpha_t} \epsilon_{t-1} \\
 
     &= \sqrt{1 - \alpha_t \alpha_{t-1}} \mathbf{x}_{t-2} + \sqrt{1 - \alpha_t \alpha_{t-1}} \bar\epsilon_{t-2} \\
 
@@ -573,6 +574,7 @@ There are modules we need to implement
 * ResNet Block
 * Attention Block
 * Group Normalization
+* Utils Blocks
 
 
 #### Positional Embeddings
@@ -712,4 +714,166 @@ class GNorm(nn.Module):
         return x
 ```
 
+#### Utils Blocks
+
+Residual
+```python
+class Residual(nn.Module):
+    def __init__(self, fn) -> None:
+        super().__init__()
+        self.fn = fn
+        
+    def forward(self, x, *args, **kwargs):
+        return self.fn(x, *args, **kwargs) + x
+```
+
+Downsample block
+```python
+class Downsample(nn.Module):
+    def __init__(self, in_dim, out_dim=None) -> None:
+        super().__init__()
+        
+        out_dim = out_dim if out_dim is not None else in_dim
+        self.down_mlp = nn.Sequential(
+            Rearrange("b c (h p1) (w p2) -> b (c p1 p2) h w", p1=2, p2=2),
+            nn.Conv2d(in_dim * 4, out_dim, 1),
+        )
+        
+    def forward(self, x):
+        return self.down_mlp(x)
+```
+
+Upsample block
+```python
+class Upsample(nn.Module):
+    def __init__(self, in_dim, out_dim=None) -> None:
+        super().__init__()
+        
+        out_dim = out_dim if out_dim is not None else in_dim
+        
+        self.up_mlp = nn.Sequential(
+            nn.Upsample(scale_factor=2, mode='nearest'),
+            nn.Conv2d(in_dim, out_dim, 3, padding=1)
+        )
+        
+    def forward(self, x):
+        return self.up_mlp(x)
+```
+
 #### The whole model
+
+```python
+class AttUNet(nn.Module):
+    def __init__(self, dim, 
+                 init_dim = None, 
+                 out_dim = None, 
+                 dim_mults=(1, 2, 4, 8),
+                 channels=3,
+                 self_condition=False,
+                 resnet_block_groups=4) -> None:
+        super().__init__()
+        
+        self.channels = channels
+        self.self_condition = self_condition
+        input_channels = channels * (2 if self_condition else 1)
+        
+        init_dim = init_dim if init_dim is not None else dim
+        self.init_conv = nn.Conv2d(input_channels, init_dim, 1, padding=0)
+        
+        dims = [init_dim, *map(lambda m : dim * m, dim_mults)]
+        in_out = list(zip(dims[:-1], dims[1:]))
+        
+        block_klass = partial(ResNetBlock, groups=resnet_block_groups)
+        
+        # positional embedding
+        time_dim = dim * 4
+        self.time_mlp = nn.Sequential(
+            SinusodialPositionalEmbeddings(dim),
+            nn.Linear(dim, time_dim),
+            nn.GELU(),
+            nn.Linear(time_dim, time_dim)
+        )
+        
+        # layers
+        self.downs = nn.ModuleList([])
+        self.ups = nn.ModuleList([])
+        num_resolutions = len(in_out)
+        
+        for ind, (in_dim, out_dim) in enumerate(in_out):
+            is_last = ind >= (num_resolutions - 1)
+            
+            self.downs.append(
+                nn.ModuleList([
+                    block_klass(in_dim, in_dim, time_emb_dim=time_dim),
+                    block_klass(in_dim, in_dim, time_emb_dim=time_dim),
+                    Residual(GNorm(in_dim, Attention(in_dim))),
+                    Downsample(in_dim, out_dim) if not is_last else nn.Conv2d(in_dim, out_dim, 3, padding=1),
+                ])
+            )
+            
+        mid_dim = dims[-1]
+        self.mid_block1 = block_klass(mid_dim, mid_dim, time_emb_dim=time_dim)
+        self.mid_attention = Residual(GNorm(mid_dim, Attention(mid_dim)))
+        self.mid_block2 = block_klass(mid_dim, mid_dim, time_emb_dim=time_dim)
+        
+        for ind, (in_dim, out_dim) in enumerate(reversed(in_out)):
+            is_last = ind == (len(in_out) - 1)
+            
+            self.ups.append(
+                nn.ModuleList([
+                    block_klass(out_dim + in_dim, out_dim, time_emb_dim=time_dim),
+                    block_klass(out_dim + in_dim, out_dim, time_emb_dim=time_dim),
+                    Residual(GNorm(out_dim, Attention(out_dim))),
+                    Upsample(out_dim, in_dim) if not is_last else nn.Conv2d(out_dim, in_dim, 3, padding=1),
+                ])
+            )
+            
+        self.out_dim = out_dim if out_dim is not None else channels
+        
+        
+        self.final_res_block = block_klass(dim * 2, dim, time_emb_dim=time_dim)
+        self.final_conv = nn.Conv2d(dim, self.out_dim, 1)
+        
+    def forward(self, x, timestep, x_self_cond=None):
+        if self.self_condition:
+            x_self_cond = x_self_cond if x_self_cond is not None else torch.zeros_like(x)
+            x = torch.cat((x_self_cond, x), dim=1)
+            
+        x = self.init_conv(x)
+        r = x.clone()
+        
+        t = self.time_mlp(timestep)
+        
+        h = []
+        
+        for block1, block2, attn, downsample in self.downs:
+            x = block1(x, t)
+            h.append(x)
+            
+            x = block2(x, t)
+            x = attn(x)
+            h.append(x)
+            
+            x = downsample(x)
+            
+        x = self.mid_block1(x, t)
+        x = self.mid_attention(x)
+        x = self.mid_block2(x, t)
+        
+        for block1, block2, attn, upsample in self.ups:
+            x = torch.cat((x, h.pop()), dim=1)
+            x = block1(x, t)
+            
+            x = torch.cat((x, h.pop()), dim=1)
+            x = block2(x, t)
+            x = attn(x)
+            
+            x = upsample(x)
+            
+        x = torch.cat((x, r), dim=1)
+        
+        x = self.final_res_block(x, t)
+        x = self.final_conv(x)
+        
+        return x
+```
