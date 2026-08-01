@@ -1,0 +1,8 @@
+{% assign service_page = site.pages | where: "permalink", "/academic_service/" | first %}
+{% if service_page and service_page.services %}
+<ul>
+  {% for service in service_page.services %}
+  <li>{{ service }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
