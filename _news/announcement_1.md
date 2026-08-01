@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-We are organizing the [1st Vietnam Datathon](https://vietnamdatathon.com/)! Stay tuned for more information shortly!
+We successfully organized the [1st Vietnam Datathon](https://vietnamdatathon.com/).
