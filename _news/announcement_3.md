@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-Start my PhD program at The University of Sydney.
+Started my PhD program at The University of Sydney.
