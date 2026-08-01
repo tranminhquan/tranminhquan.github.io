@@ -19,7 +19,7 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 ---
 
-I am currently a PhD student in Computer Science at the Sydney AI Centre, The University of Sydney, supervised by [Prof. Tongliang Liu](https://tongliang-liu.github.io/). Before starting my PhD, I served as the Data & AI Lead at Kyanon Digital. I received my Bachelor's degree in Software Engineering (ranked first in my cohort) from the University of Information Technology, Vietnam National University.
+I am currently a PhD student in Computer Science at the Sydney AI Centre, The University of Sydney, supervised by [Prof. Tongliang Liu](https://tongliang-liu.github.io/). Before starting my PhD, I served as the Data & AI Lead at Kyanon Digital. I received my Bachelor degree in Software Engineering (ranked first in my cohort) from the University of Information Technology, Vietnam National University.
 
 My research focuses on trustworthy and intelligent AI systems, with interests spanning Agentic AI (including autonomous agents and agentic memory), machine learning, learning with noisy labels, and related areas.
 
